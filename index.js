@@ -23,6 +23,7 @@ client.on('ready', () => {
     // Inicia o servidor Express quando o cliente estiver pronto
     app.listen(process.env.PORT || 3000, () => {
         console.log('Servidor Express rodando na porta 3000');
+        app.listen(3000)
     });
 });
 
@@ -64,5 +65,4 @@ client.on('message', async msg => {
 // Rota de teste para garantir que o servidor está funcionando
 app.get('/', (req, res) => {
     res.send('Botchat2 está funcionando!');
-    app.listen(3000)
 });

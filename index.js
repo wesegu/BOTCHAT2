@@ -19,10 +19,14 @@ client.on('qr', qr => {
 
 // Após a conexão
 client.on('ready', () => {
-    console.log('Tudo certo! WhatsApp conectado.');
+    console.log('WhatsApp conectado!');
+    // Inicia o servidor Express quando o cliente estiver pronto
+    app.listen(process.env.PORT || 3000, () => {
+        console.log('Servidor Express rodando na porta 3000');
+    });
 });
 
-// Inicializa tudo
+// Inicializa o cliente do WhatsApp
 client.initialize();
 
 const delay = ms => new Promise(res => setTimeout(res, ms)); // Função para criar o delay entre ações
@@ -57,7 +61,7 @@ client.on('message', async msg => {
     }
 });
 
-// Servidor Express
-app.listen(process.env.PORT || 3000, () => {
-    console.log('Servidor rodando na porta 3000');
+// Rota de teste para garantir que o servidor está funcionando
+app.get('/', (req, res) => {
+    res.send('Botchat2 está funcionando!');
 });

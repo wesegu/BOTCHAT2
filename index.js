@@ -64,4 +64,5 @@ client.on('message', async msg => {
 // Rota de teste para garantir que o servidor está funcionando
 app.get('/', (req, res) => {
     res.send('Botchat2 está funcionando!');
+    app.listen(3000)
 });

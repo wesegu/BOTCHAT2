@@ -1,5 +1,5 @@
 const express = require('express');
-const qrcode = require('qrcode-terminal');
+const qrcode = require('qrcode');
 const { Client } = require('whatsapp-web.js');
 
 const app = express();
@@ -11,20 +11,26 @@ const client = new Client({
     }
 });
 
+// Variável para armazenar o QR Code em base64
+let qrCodeBase64 = '';
+
 // Serviço de leitura do QR Code
 client.on('qr', qr => {
     console.log('Exibindo QR Code:');
-    qrcode.generate(qr, { small: true });
+    
+    // Converte o QR Code para base64 e armazena na variável
+    qrcode.toDataURL(qr, (err, url) => {
+        if (err) {
+            console.log('Erro ao gerar QR Code:', err);
+            return;
+        }
+        qrCodeBase64 = url; // Armazena a imagem base64 para ser usada na página
+    });
 });
 
 // Após a conexão
 client.on('ready', () => {
     console.log('WhatsApp conectado!');
-    // Inicia o servidor Express quando o cliente estiver pronto
-    const port = process.env.PORT || 3000;
-    app.listen(port, () => {
-        console.log(`Servidor Express rodando na porta ${port}`);
-    });
 });
 
 // Inicializa o cliente do WhatsApp
@@ -57,7 +63,27 @@ client.on('message', async msg => {
     }
 });
 
-// Rota de teste
+// Rota para exibir o QR Code gerado
 app.get('/', (req, res) => {
-    res.send('Botchat2 está funcionando!');
+    if (qrCodeBase64) {
+        // Envia a página HTML com o QR code
+        res.send(`
+            <html>
+                <body>
+                    <h1>WhatsApp Web Bot</h1>
+                    <p>Escaneie o QR Code abaixo para conectar:</p>
+                    <img src="${qrCodeBase64}" alt="QR Code">
+                </body>
+            </html>
+        `);
+    } else {
+        // Caso o QR Code ainda não tenha sido gerado
+        res.send('<h1>QR Code ainda não foi gerado...</h1>');
+    }
+});
+
+// Inicia o servidor Express
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+    console.log(`Servidor Express rodando na porta ${port}`);
 });
